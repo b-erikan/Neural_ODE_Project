@@ -19,7 +19,8 @@ def main():
     if not raw_dataset.exists():
         raw_dataset.generate(simulator=simulator)
     
-    #processed_dataset = NeuralODEDataset(config["dataset"])
+    processed_dataset = NeuralODEDataset(config["dataset"])
+    processed_dataset.generate()
     visualizer = Visualizer()
     visualizer.visualize(raw_dataset)
     print("Dataset generation completed.")
