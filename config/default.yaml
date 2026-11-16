@@ -1,0 +1,25 @@
+simulation:
+  xml_path: "simulation/cart_pole.xml"
+  dt: 0.002 
+  num_steps: 5000 # 5 seconds of simulation at 200Hz. Only used for visualization, not for dataset generation.
+dataset:
+  raw_data_path: "data/raw/raw_dataset.h5"
+  processed_data_path: "data/processed/processed_dataset.h5"
+  raw_trajectory_size: 2500
+  window_size: 50
+  stride: 10
+  train_ratio: 0.8
+  val_ratio: 0.1
+  seed: 42 #answer to life the universe and everything
+  num_trajectories: 50
+  qpos_init_range:
+    cart_position: [-1.0, 1.0] #m
+    pendulum_angle: [-3.14, 3.14] #rad
+  qvel_init_range:
+    cart_velocity: [-1.0, 1.0] #m/s
+    pendulum_angular_velocity: [-1.0, 1.0] #rad/s
+  control_range:
+    cart_force: [0.0, 0.0] #Newtons. Leave 0 for autonomous system.
+
+
+
