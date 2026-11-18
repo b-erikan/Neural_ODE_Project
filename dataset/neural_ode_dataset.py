@@ -1,5 +1,5 @@
 import h5py
-from .trajectory import Trajectory
+from utils.trajectory import Trajectory
 from .trajectory_dataset import TrajectoryDataset
 import numpy as np
 
@@ -20,6 +20,40 @@ class NeuralODEDataset:
         except OSError:
             return False
 
+    def load_subtrajectories(self, trajectory_id: int):
+
+        subtrajectories = []
+
+        with h5py.File(self.output_path, "r") as f:
+
+            num_subtrajectories = f.attrs["num_subtrajectories"]
+
+            for sub_id in range(num_subtrajectories):
+
+                group_name = f"subtrajectory_{sub_id:03d}"
+                group = f[group_name]
+
+                #Scan through all subtrajectories, return the ones that belong to the given trajectory ID.
+                source_id = group.attrs["source_trajectory_id"]
+
+                if source_id != trajectory_id:
+                    continue
+
+                trajectory = Trajectory()
+                time = group["observations"]["time"][:]
+                qpos = group["observations"]["qpos"][:]
+                qvel = group["observations"]["qvel"][:]
+                ctrl = group["actions"]["ctrl"][:]
+
+                for i in range(len(time)):
+                    trajectory.append_sample(time[i],qpos[i],qvel[i],ctrl[i])
+
+                subtrajectories.append(trajectory)
+
+        if len(subtrajectories) == 0:
+            raise IndexError(f"No subtrajectories found for trajectory {trajectory_id}.")
+
+        return subtrajectories
 
     def generate(self):
 
@@ -50,7 +84,7 @@ class NeuralODEDataset:
                 if trajectory_length < self.window_size:
                     continue
 
-                # Sliding window
+                # Sliding window. Every subtrajectory is basically another valid trajectory where first sample of the trajectory is the inidial condition.
                 for start_idx in range(
                     0,
                     trajectory_length - self.window_size + 1,
@@ -72,6 +106,9 @@ class NeuralODEDataset:
                     actions.create_dataset("ctrl", data=ctrl[start_idx:end_idx])
 
                     # Metadata. Store the complete trajectory from which this subtrajectory is generated.
+                    # We keep index info and main trajectory ID here in case we need it later for visual matching etc. 
+                    # Currently this info is not needed, but stored anyway.
+                    
                     sub_group.attrs["source_trajectory_id"] = traj_id
                     sub_group.attrs["start_idx"] = start_idx
                     sub_group.attrs["end_idx"] = end_idx

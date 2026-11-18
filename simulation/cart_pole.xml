@@ -1,6 +1,6 @@
 <mujoco model = "cart_pole">
     <compiler angle="radian"/>
-    <option timestep="0.002" gravity="0 0 -9.81" integrator="implicitfast"/>
+    <option timestep="0.02" gravity="0 0 -9.81" integrator="implicitfast"/>
     <default>
         <joint damping="0.02" frictionloss="0.001"/>
         <geom condim="3" friction="1.0 0.005 0.0001"/>
@@ -14,7 +14,8 @@
         <!-- Cart -->
         <body name="cart" pos="0 0 1.15">
             <geom name="cart_body" type="box" size="0.2 0.35 0.15" pos="0 0 0" rgba="0.8 0.2 0.2 1" mass="0.5"/>
-            <joint name="cart_joint" type="slide" axis="1 0 0" limited="true" range="-2.3 2.3"/>
+            <joint name="cart_joint" type="slide" axis="1 0 0"/> 
+            <! -- limited="true" range="-2.3 2.3 is temporarily removed because of continuity problem--/>
             <!-- Pendulum -->
             <body name="pendulum" pos="0 -0.375 0.0">
                 <joint name="pendulum_joint"

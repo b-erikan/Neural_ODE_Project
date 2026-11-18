@@ -1,25 +1,42 @@
 simulation:
   xml_path: "simulation/cart_pole.xml"
-  dt: 0.002 
-  num_steps: 5000 # 5 seconds of simulation at 200Hz. Only used for visualization, not for dataset generation.
+  dt: 0.02 
+  num_steps: 250 # 5 seconds of simulation at 50Hz. Only used for visualization, not for dataset generation.
 dataset:
   raw_data_path: "data/raw/raw_dataset.h5"
   processed_data_path: "data/processed/processed_dataset.h5"
-  raw_trajectory_size: 2500
-  window_size: 50
-  stride: 10
+  raw_trajectory_size: 200
+  window_size: 25
+  stride: 5
   train_ratio: 0.8
   val_ratio: 0.1
   seed: 42 #answer to life the universe and everything
-  num_trajectories: 50
+  num_trajectories: 300
   qpos_init_range:
-    cart_position: [-1.0, 1.0] #m
+    cart_position: [-0.5, 0.5] #m
     pendulum_angle: [-3.14, 3.14] #rad
   qvel_init_range:
-    cart_velocity: [-1.0, 1.0] #m/s
-    pendulum_angular_velocity: [-1.0, 1.0] #rad/s
+    cart_velocity: [-0.5, 0.5] #m/s
+    pendulum_angular_velocity: [-0.5, 0.5] #rad/s
   control_range:
     cart_force: [0.0, 0.0] #Newtons. Leave 0 for autonomous system.
+neural_ode:
+  method: dopri5 #alternatives are rk4, euler, midpoint, adams etc.
+  hidden_dim: 64
+  state_dim: 4 #Cart position/velocity & Pendulum position/velocity
+trainer:
+  num_epochs: 300
+  batch_size: 256
+  lr: 0.002
+  early_stopping: #Will be implemented later.
+    patience: 20
+    min_delta: 0.0001
+  scheduler: #LR Scheduler for optimization
+    mode: "min"
+    factor: 0.5
+    patience: 10
+  checkpoint_path: "results/best_model.pth"
+
 
 
 

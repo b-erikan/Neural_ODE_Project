@@ -1,5 +1,5 @@
 import h5py
-from .trajectory import Trajectory
+from utils.trajectory import Trajectory
 import numpy as np
 from simulation.mujoco_simulator import MujocoSimulator
 

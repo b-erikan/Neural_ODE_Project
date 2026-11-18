@@ -18,3 +18,6 @@ class Trajectory:
         self.qpos = []
         self.qvel = []
         self.ctrl = []
+
+    def num_samples(self):
+        return self.time.__len__()

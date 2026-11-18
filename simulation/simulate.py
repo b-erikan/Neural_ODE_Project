@@ -2,20 +2,19 @@ import time
 import mujoco
 import mujoco.viewer
 import numpy as np
-
-from mujoco_simulator import MujocoSimulator
+from config.config import load_config
+from simulation.mujoco_simulator import MujocoSimulator
 
 #You can run this script to visualize the MuJoCo simulation in a window. It will launch a passive viewer that displays the simulation in real-time. The simulation will run until you close the viewer window..
 
 def main():
 
-    XML_PATH = "simulation/cart_pole.xml" #Hardcoded path to the XML file for the MuJoCo simulation.
-    MAX_PENDULUM_INITIAL_VELOCITY = 10000.0  #Do you wanna see a helicopter? 
+    MAX_PENDULUM_INITIAL_VELOCITY = 0.0  #Do you wanna see a helicopter? 
     MAX_CART_INITIAL_VELOCITY = 1.0  
     MAX_CART_INITIAL_POSITION = 1.0  
 
-
-    simulator = MujocoSimulator(XML_PATH)
+    config = load_config()
+    simulator = MujocoSimulator(config["simulation"])
 
     simulator.reset() #Maybe this is not necessary but it feels like a good idea to reset the simulation here.
 

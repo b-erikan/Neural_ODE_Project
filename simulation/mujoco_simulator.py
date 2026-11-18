@@ -1,5 +1,5 @@
 import mujoco
-from dataset.trajectory import Trajectory
+from utils.trajectory import Trajectory
 import numpy as np
 
 class MujocoSimulator:
@@ -43,18 +43,30 @@ class MujocoSimulator:
 
     def generate_trajectory_from_initial(self, trajectory_length_samples, initial_state=None, control_sequence=None):
         self.reset()
-        #Returns a trajectory equal to to the control sequence. Last sample is left out.
         if initial_state is None:
             raise ValueError("Initial state must be provided.")
-
         if control_sequence is None:
             control_sequence = np.zeros((trajectory_length_samples, self.model.nu))
-        
+
         self.set_state(initial_state[0], initial_state[1])
         trajectory = Trajectory()
+        #Record initial
+        qpos, qvel = self.get_state()
+        trajectory.append_sample(
+            self.data.time,
+            qpos.copy(),
+            qvel.copy(),
+            np.zeros(self.model.nu)
+        )
+        #Record the rest of the trajectory (N+1 points)
         for ctrl in control_sequence:
             qpos, qvel = self.step(ctrl)
-            trajectory.append_sample(self.data.time, qpos.copy(), qvel.copy(), ctrl)
+            trajectory.append_sample(
+                self.data.time,
+                qpos.copy(),
+                qvel.copy(),
+                ctrl
+            )
 
         return trajectory
 
