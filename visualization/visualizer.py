@@ -59,3 +59,43 @@ class Visualizer:
         fig.tight_layout()
 
         plt.show()
+
+    def plot_phase_portraits(self, true_trajectory, predicted_trajectory):
+        """Plot cart and pendulum states in their 2D phase planes."""
+        true_qpos = np.asarray(true_trajectory.qpos)
+        true_qvel = np.asarray(true_trajectory.qvel)
+        predicted_qpos = np.asarray(predicted_trajectory.qpos)
+        predicted_qvel = np.asarray(predicted_trajectory.qvel)
+
+        fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+
+        axes[0].plot(true_qpos[:, 0], true_qvel[:, 0], label="MuJoCo")
+        axes[0].plot(
+            predicted_qpos[:, 0],
+            predicted_qvel[:, 0],
+            "--",
+            label="Neural ODE",
+        )
+        axes[0].set_xlabel("Cart position [m]")
+        axes[0].set_ylabel("Cart velocity [m/s]")
+        axes[0].set_title("Cart Phase Portrait")
+        axes[0].legend()
+        axes[0].grid(True)
+
+        axes[1].plot(true_qpos[:, 1], true_qvel[:, 1], label="MuJoCo")
+        axes[1].plot(
+            predicted_qpos[:, 1],
+            predicted_qvel[:, 1],
+            "--",
+            label="Neural ODE",
+        )
+        axes[1].set_xlabel("Pendulum angle [rad]")
+        axes[1].set_ylabel("Angular velocity [rad/s]")
+        axes[1].set_title("Pendulum Phase Portrait")
+        axes[1].legend()
+        axes[1].grid(True)
+
+        fig.suptitle("MuJoCo vs Neural ODE Phase Portraits", fontsize=15)
+        fig.tight_layout()
+
+        plt.show()

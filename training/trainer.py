@@ -40,8 +40,17 @@ class Trainer:
         x_pred = self.model.integrate(x0, t) 
         #ODE solver output is (T, B, D) but dataset target is (B, T, D) so we need to reshape the tensor.
         x_pred = x_pred.permute(1, 0, 2)
-        loss = self.loss_function(x_pred, x_true)
+        #loss = self.loss_function(x_pred, x_true)
+
+        #UPDATE: Normalized loss for better optimization.
+
+        state_std = self.model.state_std.view(1, 1, -1)
+        loss = self.loss_function((x_pred - x_true) / state_std,torch.zeros_like(x_true),)
         loss.backward()
+
+        #Validation loss is oscillating a lot. I'll try gradient clipping here to prevent overcorrection.
+        torch.nn.utils.clip_grad_norm_(self.model.parameters(),max_norm=1.0)
+
         self.optimizer.step() #BP happens here.
         return loss.item()
 
@@ -73,7 +82,12 @@ class Trainer:
                 t = t.to(self.device)
                 x_pred = self.model.integrate(x0, t) #Rollout the network with the initial condition for prediction.
                 x_pred = x_pred.permute(1, 0, 2) #Prediction reshaped.
-                loss = self.loss_function(x_pred, x_true) #Compare prediction to ground truth.
+                #loss = self.loss_function(x_pred, x_true) #Compare prediction to ground truth.
+
+                #UPDATE: Normalized loss for better optimization.
+                state_std = self.model.state_std.view(1, 1, -1)
+                loss = self.loss_function((x_pred - x_true) / state_std,torch.zeros_like(x_true),)
+
                 total_loss += loss.item()
                 num_batches += 1
 

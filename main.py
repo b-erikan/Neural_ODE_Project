@@ -12,6 +12,7 @@ from utils.dataset_split import split_trajectory_ids
 import torch
 from torch.utils.data import DataLoader
 import argparse
+from utils.normalization import calculate_normalization_stats
 
 
 def run_training(config, simulator, device):
@@ -39,6 +40,11 @@ def run_training(config, simulator, device):
     print(f"Validation trajectories: {len(val_ids)}")
     print(f"Test trajectories:       {len(test_ids)}")
 
+    state_std, deriv_std = calculate_normalization_stats(raw_dataset,train_ids)
+    #Get standard dev. for the entire training dataset.
+    print("State standard deviations:", state_std)
+    print("Derivative standard deviations:", deriv_std)
+
     #Instantiate datasets and create dataloaders
     train_dataset = TorchDataset(dataset_config, train_ids)
     val_dataset = TorchDataset(dataset_config, val_ids)
@@ -54,7 +60,9 @@ def run_training(config, simulator, device):
         shuffle=False
     )
     model = NeuralODE(config["neural_ode"]).to(device)
-
+    model.set_normalization_stats(state_std, deriv_std)
+    model = model.to(device)
+    
     trainer = Trainer(
         model=model,
         config=config["trainer"],
@@ -97,6 +105,7 @@ def run_evaluation(config, simulator, device):
         true_trajectory,
         predicted_trajectory
     )
+    visualizer.plot_phase_portraits(true_trajectory, predicted_trajectory)
 
 
 def main():
