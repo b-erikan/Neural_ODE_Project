@@ -13,7 +13,7 @@ class NeuralODE(nn.Module):
         self.input_dim = self.state_dim + 1 #2 inputs for wrapping pendulum angle sin/cos
         self.method = config["method"]
         self.loss_function = nn.MSELoss()
-        #Initialize std values as 1. We'll give them as inputs later. 
+        #Initialize std values as 1. We'll give them as inputs later.
         self.register_buffer("state_std", torch.ones(self.state_dim))
         self.register_buffer("deriv_std", torch.ones(self.state_dim))
 

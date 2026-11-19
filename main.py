@@ -62,7 +62,6 @@ def run_training(config, simulator, device):
     model = NeuralODE(config["neural_ode"]).to(device)
     model.set_normalization_stats(state_std, deriv_std)
     model = model.to(device)
-    
     trainer = Trainer(
         model=model,
         config=config["trainer"],
@@ -99,13 +98,20 @@ def run_evaluation(config, simulator, device):
     for name, value in metrics.items():
         print(f"{name}: {value:.4f}")
 
-    #Plot stuff.    
+    #Plot stuff with AI generated functions.
     visualizer = Visualizer()
     visualizer.plot_trajectories(
         true_trajectory,
         predicted_trajectory
     )
     visualizer.plot_phase_portraits(true_trajectory, predicted_trajectory)
+
+    visualizer.run_realtime(
+        simulator=simulator,
+        neural_ode=model,
+        initial_state=(true_trajectory.qpos[0], true_trajectory.qvel[0]),
+        duration=config["simulation"]["num_steps"] * config["simulation"]["dt"],
+    )
 
 
 def main():

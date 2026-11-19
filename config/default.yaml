@@ -11,13 +11,13 @@ dataset:
   train_ratio: 0.8
   val_ratio: 0.1
   seed: 42 #answer to life the universe and everything
-  num_trajectories: 300
+  num_trajectories: 500
   qpos_init_range:
     cart_position: [-0.5, 0.5] #m
     pendulum_angle: [-3.14, 3.14] #rad
   qvel_init_range:
-    cart_velocity: [-0.5, 0.5] #m/s
-    pendulum_angular_velocity: [-0.5, 0.5] #rad/s
+    cart_velocity: [-1.0, 1.0] #m/s
+    pendulum_angular_velocity: [-5.0, 5.0] #rad/s
   control_range:
     cart_force: [0.0, 0.0] #Newtons. Leave 0 for autonomous system.
 neural_ode:
@@ -25,7 +25,7 @@ neural_ode:
   hidden_dim: 64
   state_dim: 4 #Cart position/velocity & Pendulum position/velocity
 trainer:
-  num_epochs: 1000
+  num_epochs: 500
   batch_size: 256
   lr: 0.002
   early_stopping: #Will be implemented later.
